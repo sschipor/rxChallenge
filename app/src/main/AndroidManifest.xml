@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.github.rxchallenge">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".RxChallengeApp"
         android:allowBackup="true"
