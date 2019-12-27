@@ -23,5 +23,9 @@
         android:id="@+id/commentsFragment"
         android:name="com.github.rxchallenge.fragment.CommentsFragment"
         android:label="Comments"
-        tools:layout="@layout/comments_fragment" />
+        tools:layout="@layout/comments_fragment" >
+        <argument
+            android:name="post"
+            app:argType="com.github.rxchallenge.db.entity.Post" />
+    </fragment>
 </navigation>

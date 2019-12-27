@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData;
 import com.github.rxchallenge.db.AppDB;
 import com.github.rxchallenge.db.DatabaseClient;
 import com.github.rxchallenge.db.entity.Post;
+import com.github.rxchallenge.fragment.PostsViewModel;
 import com.github.rxchallenge.network.ApiClient;
 import com.github.rxchallenge.network.utils.NetworkBoundResource;
 import com.github.rxchallenge.network.utils.RepoResponse;
@@ -30,17 +31,23 @@ public class PostRepo {
 
     public LiveData<RepoResponse<List<Post>>> getPosts(
             final int userId,
+            PostsViewModel.ViewType viewType,
             CompositeDisposable disposable) {
-        return new NetworkBoundResource<List<Post>, List<Post>>(disposable) {
+        return new NetworkBoundResource<List<Post>>(disposable) {
 
             @Override
             public Flowable<List<Post>> loadFomDB() {
-                return appDB.getPostDao().getPosts(userId);
+                if (viewType == PostsViewModel.ViewType.ALL) {
+                    return appDB.getPostDao().getPosts(userId);
+                } else {
+                    return appDB.getPostDao().getFavoritePosts(userId);
+                }
             }
 
             @Override
             public Boolean isApiCallRequired(List<Post> result) {
-                return result == null || result.size() == 0;
+                //since fav is only in DB there is no need to make api call if this is selected
+                return result == null || result.size() == 0 && viewType != PostsViewModel.ViewType.FAVORITE;
             }
 
             @Override
@@ -53,5 +60,9 @@ public class PostRepo {
                 return appDB.getPostDao().insertAll(response);
             }
         }.toLiveData();
+    }
+
+    public Completable updateFavorite(int postId, boolean isFavorite) {
+        return appDB.getPostDao().updateFavorite(postId, isFavorite);
     }
 }

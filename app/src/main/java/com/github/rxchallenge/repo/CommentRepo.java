@@ -32,7 +32,7 @@ public class CommentRepo {
     public LiveData<RepoResponse<List<Comment>>> getComments(
             final int postId,
             CompositeDisposable disposable) {
-        return new NetworkBoundResource<List<Comment>, List<Comment>>(disposable) {
+        return new NetworkBoundResource<List<Comment>>(disposable) {
 
             @Override
             public Flowable<List<Comment>> loadFomDB() {

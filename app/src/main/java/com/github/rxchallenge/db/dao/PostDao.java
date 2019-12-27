@@ -11,7 +11,6 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
-import io.reactivex.Single;
 
 /**
  * @author Sebastian Schipor
@@ -19,12 +18,14 @@ import io.reactivex.Single;
 @Dao
 public interface PostDao {
 
-    //get paged posts
     @Query("SELECT * FROM posts WHERE userId = :userId")
     Flowable<List<Post>> getPosts(int userId);
 
-    @Query("SELECT * FROM posts WHERE id = :id")
-    Single<Post> getPost(int id);
+    @Query("SELECT * FROM posts WHERE userId = :userId AND isFavorite = 1")
+    Flowable<List<Post>> getFavoritePosts(int userId);
+
+    @Query("UPDATE posts SET isFavorite = :isFavorite WHERE id = :id")
+    Completable updateFavorite(int id, boolean isFavorite);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertAll(List<Post> posts);
