@@ -65,4 +65,29 @@ public class PostRepo {
     public Completable updateFavorite(int postId, boolean isFavorite) {
         return appDB.getPostDao().updateFavorite(postId, isFavorite);
     }
+
+    public LiveData<RepoResponse<Post>> getPostById(int postId, CompositeDisposable disposable) {
+        return new NetworkBoundResource<Post>(disposable) {
+
+            @Override
+            public Flowable<Post> loadFomDB() {
+                return appDB.getPostDao().getPostById(postId);
+            }
+
+            @Override
+            public Boolean isApiCallRequired(Post result) {
+                return result == null;
+            }
+
+            @Override
+            public Single<Post> getApiCall() {
+                return apiClient.getPostById(postId);
+            }
+
+            @Override
+            public Completable saveResponse(final Post response) {
+                return appDB.getPostDao().insert(response);
+            }
+        }.toLiveData();
+    }
 }

@@ -30,7 +30,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             if (modelClass.isAssignableFrom(PostsViewModel.class)) {
                 return modelClass.getConstructor(PostRepo.class).newInstance(new PostRepo(apiClient));
             } else if (modelClass.isAssignableFrom(CommentsViewModel.class)) {
-                return modelClass.getConstructor(CommentRepo.class).newInstance(new CommentRepo(apiClient));
+                return modelClass.getConstructor(CommentRepo.class, PostRepo.class).newInstance(
+                        new CommentRepo(apiClient), new PostRepo(apiClient));
             } else {
                 throw new IllegalArgumentException("Unknown ViewModel class");
             }

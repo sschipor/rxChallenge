@@ -56,6 +56,6 @@ public class PostsViewModel extends ViewModel {
     }
 
     public enum ViewType {
-        ALL, FAVORITE, REFRESH
+        ALL, FAVORITE
     }
 }

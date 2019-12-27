@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -86,8 +85,6 @@ public class PostsFragment extends Fragment implements PostsAdapter.PostListCall
         ((MainActivity) getActivity()).setupNavBar();
         mViewModel.setUserId(loginViewModel.userId);
 
-
-        postsRv.setLayoutManager(new LinearLayoutManager(getActivity()));
         postsRv.setAdapter(adapter);
 
         btnAll.setOnClickListener(view -> {
@@ -97,6 +94,7 @@ public class PostsFragment extends Fragment implements PostsAdapter.PostListCall
             mViewModel.onViewTypeChanged(PostsViewModel.ViewType.FAVORITE);
         });
 
+        //change bottom buttons background according to selected list view type
         mViewModel.getViewType().observe(getViewLifecycleOwner(), viewType -> {
             if (viewType == PostsViewModel.ViewType.ALL) {
                 btnAll.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));

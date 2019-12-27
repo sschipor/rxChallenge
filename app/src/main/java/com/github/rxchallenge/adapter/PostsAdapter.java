@@ -75,7 +75,7 @@ public class PostsAdapter extends ListAdapter<Post, PostsAdapter.PostVH> {
             itemView.setOnClickListener(view -> {
                 //push comments view
                 PostsFragmentDirections.ActionPostsFragmentToCommentsFragment action =
-                        PostsFragmentDirections.actionPostsFragmentToCommentsFragment(post);
+                        PostsFragmentDirections.actionPostsFragmentToCommentsFragment(post.id);
                 Navigation.findNavController(itemView).navigate(action);
             });
 

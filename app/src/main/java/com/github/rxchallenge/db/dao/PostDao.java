@@ -21,6 +21,9 @@ public interface PostDao {
     @Query("SELECT * FROM posts WHERE userId = :userId")
     Flowable<List<Post>> getPosts(int userId);
 
+    @Query("SELECT * FROM posts WHERE id = :postId")
+    Flowable<Post> getPostById(int postId);
+
     @Query("SELECT * FROM posts WHERE userId = :userId AND isFavorite = 1")
     Flowable<List<Post>> getFavoritePosts(int userId);
 
@@ -29,4 +32,7 @@ public interface PostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertAll(List<Post> posts);
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insert(Post post);
 }

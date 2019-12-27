@@ -1,7 +1,6 @@
 package com.github.rxchallenge.fragment;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
@@ -22,7 +21,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.rxchallenge.R;
-import com.github.rxchallenge.activity.MainActivity;
 
 public class LoginFragment extends Fragment {
 
@@ -58,8 +56,8 @@ public class LoginFragment extends Fragment {
                     }
                 });
 
-        userIdField.setOnFocusChangeListener((view12, b) -> {
-            if (!b) {
+        userIdField.setOnFocusChangeListener((view12, hasFocus) -> {
+            if (!hasFocus) {
                 hideKeyboard();
             }
         });
