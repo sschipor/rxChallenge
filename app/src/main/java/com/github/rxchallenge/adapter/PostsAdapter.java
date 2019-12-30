@@ -27,7 +27,7 @@ public class PostsAdapter extends ListAdapter<Post, PostsAdapter.PostVH> {
     private PostListCallback callback;
 
     public interface PostListCallback {
-        void onFavoriteChanged(int postId, boolean isFavorite);
+        void onChangeFavorite(int postId, boolean isFavorite);
     }
 
     public PostsAdapter(@NonNull DiffUtil.ItemCallback<Post> diffCallback, PostListCallback callback) {
@@ -83,7 +83,7 @@ public class PostsAdapter extends ListAdapter<Post, PostsAdapter.PostVH> {
                 //notify fragment to call update post in DB
                 //the list item will be refreshed automatically
                 if (callback != null) {
-                    callback.onFavoriteChanged(post.id, !post.isFavorite);
+                    callback.onChangeFavorite(post.id, !post.isFavorite);
                 }
             });
         }

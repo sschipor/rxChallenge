@@ -73,12 +73,16 @@ public class CommentsFragment extends Fragment {
         btnFav = view.findViewById(R.id.btnFav);
         commentsRv = view.findViewById(R.id.commentsRv);
 
+        //setup the views
         setup();
+        //retrieve post livedata to handle changes
         getPost();
+        //retrieve comments for post
         getComments();
     }
 
     private void setup() {
+        //call setup nav bar to sync toolbar with navigation graph
         ((MainActivity) getActivity()).setupNavBar();
         commentsRv.setAdapter(adapter);
     }
@@ -98,9 +102,8 @@ public class CommentsFragment extends Fragment {
                         btnFav.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
                         btnFav.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
                     }
-                    btnFav.setOnClickListener(view -> {
-                        mViewModel.updateFavoritePost(post.id, !post.isFavorite);
-                    });
+
+                    btnFav.setOnClickListener(view -> mViewModel.updateFavoritePost(post.id, !post.isFavorite));
                 }
             }
         });

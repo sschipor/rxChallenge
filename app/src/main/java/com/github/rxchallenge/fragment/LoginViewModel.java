@@ -19,7 +19,7 @@ public class LoginViewModel extends ViewModel {
         authenticationState.setValue(AuthenticationState.UNAUTHENTICATED);
     }
 
-    public void authenticate(int userId) {
+    void authenticate(int userId) {
         if (userId > 0) {
             this.userId = userId;
             authenticationState.setValue(AuthenticationState.AUTHENTICATED);

@@ -25,17 +25,21 @@ import com.github.rxchallenge.adapter.PostsAdapter;
 import com.github.rxchallenge.db.entity.Post;
 import com.github.rxchallenge.di.InjectionHelper;
 import com.github.rxchallenge.di.ViewModelFactory;
+import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.List;
+
+import rx.subscriptions.CompositeSubscription;
 
 public class PostsFragment extends Fragment implements PostsAdapter.PostListCallback {
 
     private PostsViewModel mViewModel;
     private LoginViewModel loginViewModel;
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
+    //views
     private RecyclerView postsRv;
     private TextView noPostsHint;
-
     private Button btnAll;
     private Button btnFav;
 
@@ -81,33 +85,28 @@ public class PostsFragment extends Fragment implements PostsAdapter.PostListCall
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.unsubscribe();
+    }
+
     private void setup() {
+        //call activity method to sync toolbar with nav graph
         ((MainActivity) getActivity()).setupNavBar();
         mViewModel.setUserId(loginViewModel.userId);
 
         postsRv.setAdapter(adapter);
 
-        btnAll.setOnClickListener(view -> {
-            mViewModel.onViewTypeChanged(PostsViewModel.ViewType.ALL);
-        });
-        btnFav.setOnClickListener(view -> {
-            mViewModel.onViewTypeChanged(PostsViewModel.ViewType.FAVORITE);
-        });
+        compositeSubscription.add(
+                RxView.clicks(btnAll).subscribe(aVoid -> mViewModel.onViewTypeChanged(PostsViewModel.ViewType.ALL))
+        );
+        compositeSubscription.add(
+                RxView.clicks(btnFav).subscribe(aVoid -> mViewModel.onViewTypeChanged(PostsViewModel.ViewType.FAVORITE))
+        );
 
         //change bottom buttons background according to selected list view type
-        mViewModel.getViewType().observe(getViewLifecycleOwner(), viewType -> {
-            if (viewType == PostsViewModel.ViewType.ALL) {
-                btnAll.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-                btnAll.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
-                btnFav.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
-                btnFav.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
-            } else {
-                btnFav.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
-                btnFav.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
-                btnAll.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
-                btnAll.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
-            }
-        });
+        mViewModel.getViewType().observe(getViewLifecycleOwner(), this::updateViewTypeButtonsState);
     }
 
     private void getPosts() {
@@ -140,7 +139,21 @@ public class PostsFragment extends Fragment implements PostsAdapter.PostListCall
     }
 
     @Override
-    public void onFavoriteChanged(int postId, boolean isFavorite) {
+    public void onChangeFavorite(int postId, boolean isFavorite) {
         mViewModel.updateFavoritePost(postId, isFavorite);
+    }
+
+    private void updateViewTypeButtonsState(PostsViewModel.ViewType type) {
+        if (type == PostsViewModel.ViewType.ALL) {
+            btnAll.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+            btnAll.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
+            btnFav.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
+            btnFav.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
+        } else {
+            btnFav.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimary));
+            btnFav.setTextColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
+            btnAll.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorWindow));
+            btnAll.setTextColor(ContextCompat.getColor(getContext(), R.color.colorBlack));
+        }
     }
 }

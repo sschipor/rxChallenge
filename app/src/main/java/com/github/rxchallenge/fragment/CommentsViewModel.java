@@ -10,10 +10,7 @@ import com.github.rxchallenge.repo.CommentRepo;
 import com.github.rxchallenge.repo.PostRepo;
 
 import java.util.List;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class CommentsViewModel extends ViewModel {
 
@@ -31,14 +28,11 @@ public class CommentsViewModel extends ViewModel {
     }
 
     LiveData<RepoResponse<List<Comment>>> getComments(int postId) {
-       return commentRepo.getComments(postId, compositeDisposable);
+        return commentRepo.getComments(postId, compositeDisposable);
     }
 
     void updateFavoritePost(int postId, boolean isFavorite) {
-        compositeDisposable.add(postRepo.updateFavorite(postId, isFavorite)
-                .subscribeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe());
+        postRepo.updateFavorite(postId, isFavorite);
     }
 
     @Override

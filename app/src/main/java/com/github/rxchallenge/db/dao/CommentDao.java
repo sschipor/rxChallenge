@@ -9,7 +9,6 @@ import com.github.rxchallenge.db.entity.Comment;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 /**
@@ -22,5 +21,5 @@ public interface CommentDao {
     Flowable<List<Comment>> getComments(int postId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insertAll(List<Comment> comments);
+    void insertAll(List<Comment> comments);
 }

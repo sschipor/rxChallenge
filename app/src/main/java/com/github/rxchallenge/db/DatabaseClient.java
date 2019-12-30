@@ -9,6 +9,7 @@ import androidx.room.Room;
  */
 public class DatabaseClient {
 
+    private final String DB_NAME = "rxChallenge";
     private static DatabaseClient instance = null;
     private AppDB applicationDB;
 
@@ -17,7 +18,7 @@ public class DatabaseClient {
             applicationDB = Room.databaseBuilder(
                     context.getApplicationContext(),
                     AppDB.class,
-                    "rxChallenge"
+                    DB_NAME
             ).build();
         }
     }
@@ -29,11 +30,10 @@ public class DatabaseClient {
         return instance;
     }
 
-    public static DatabaseClient getInstance(){
+    public static DatabaseClient getInstance() {
         if (instance == null) {
             throw new IllegalStateException("Database Client is not initialized");
-        }
-        else return instance;
+        } else return instance;
     }
 
     public AppDB getApplicationDB() {

@@ -11,9 +11,7 @@ import com.github.rxchallenge.repo.PostRepo;
 
 import java.util.List;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class PostsViewModel extends ViewModel {
 
@@ -43,10 +41,7 @@ public class PostsViewModel extends ViewModel {
     }
 
     void updateFavoritePost(int postId, boolean isFavorite) {
-        compositeDisposable.add(repo.updateFavorite(postId, isFavorite)
-                .subscribeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe());
+        repo.updateFavorite(postId,isFavorite);
     }
 
     @Override

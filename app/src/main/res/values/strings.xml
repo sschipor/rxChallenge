@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">RxChallenge</string>
+    <string name="title_login">Login</string>
+    <string name="invalid_credentials">Invalid credentials</string>
+    <string name="no_comments_available">No comments available</string>
+    <string name="user_id">User ID</string>
+    <string name="login">Login</string>
+    <string name="fav">Fav</string>
+    <string name="all">All</string>
+    <string name="no_posts_available">No posts available</string>
 </resources>

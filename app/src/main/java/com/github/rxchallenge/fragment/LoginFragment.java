@@ -21,10 +21,16 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.rxchallenge.R;
+import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding.widget.RxTextView;
+
+import rx.subscriptions.CompositeSubscription;
+
 
 public class LoginFragment extends Fragment {
 
     private LoginViewModel mViewModel;
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -43,7 +49,7 @@ public class LoginFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //set toolbar title
-        getActivity().setTitle("Login");
+        getActivity().setTitle(R.string.title_login);
 
         final EditText userIdField = view.findViewById(R.id.userIdInput);
         Button btnLogin = view.findViewById(R.id.btnLogin);
@@ -56,24 +62,34 @@ public class LoginFragment extends Fragment {
                     }
                 });
 
-        userIdField.setOnFocusChangeListener((view12, hasFocus) -> {
-            if (!hasFocus) {
-                hideKeyboard();
-            }
-        });
+        compositeSubscription.add(
+                RxView.focusChanges(userIdField).subscribe(hasFocus -> {
+                    if (!hasFocus) {
+                        //if user focused anywhere else on screen just close keyboard
+                        hideKeyboard();
+                    }
+                })
+        );
 
-        btnLogin.setOnClickListener(view1 -> {
-            String input = userIdField.getText().toString();
-            if (validateInput(input)) {
-                mViewModel.authenticate(Integer.valueOf(input));
-            }
-        });
+        compositeSubscription.add(
+                RxTextView.textChanges(userIdField).subscribe(charSequence ->
+                        btnLogin.setEnabled(charSequence.length() >= 1))
+        );
+
+        compositeSubscription.add(
+                RxView.clicks(btnLogin).subscribe(aVoid -> {
+                    String input = userIdField.getText().toString();
+                    if (validateInput(input)) {
+                        mViewModel.authenticate(Integer.valueOf(input));
+                    }
+                })
+        );
 
         mViewModel.authenticationState.observe(getViewLifecycleOwner(), authenticationState -> {
             if (authenticationState == LoginViewModel.AuthenticationState.AUTHENTICATED) {
                 Navigation.findNavController(view).popBackStack();
             } else if (authenticationState == LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION) {
-                Toast.makeText(getActivity(), "Invalid credentials", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.invalid_credentials, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -93,5 +109,11 @@ public class LoginFragment extends Fragment {
         if (im != null) {
             im.hideSoftInputFromWindow(getView().getWindowToken(), 0);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        compositeSubscription.unsubscribe();
     }
 }

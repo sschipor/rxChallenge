@@ -9,7 +9,6 @@ import com.github.rxchallenge.db.entity.Post;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 /**
@@ -28,11 +27,11 @@ public interface PostDao {
     Flowable<List<Post>> getFavoritePosts(int userId);
 
     @Query("UPDATE posts SET isFavorite = :isFavorite WHERE id = :id")
-    Completable updateFavorite(int id, boolean isFavorite);
+    void updateFavorite(int id, boolean isFavorite);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insertAll(List<Post> posts);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertAll(List<Post> posts);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insert(Post post);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insert(Post post);
 }
