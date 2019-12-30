@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData;
 
 import com.github.rxchallenge.AppExecutors;
 import com.github.rxchallenge.db.AppDB;
-import com.github.rxchallenge.db.DatabaseClient;
 import com.github.rxchallenge.db.entity.Post;
 import com.github.rxchallenge.fragment.PostsViewModel;
 import com.github.rxchallenge.network.ApiClient;
@@ -13,21 +12,30 @@ import com.github.rxchallenge.network.utils.RepoBoundResource;
 import com.github.rxchallenge.network.utils.RepoResponse;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * @author Sebastian Schipor
  */
 public class PostRepo {
+
     private ApiClient apiClient;
-    private AppDB appDB = DatabaseClient.getInstance().getApplicationDB();
+    private AppDB appDB;
 
+    Scheduler processScheduler = Schedulers.io();
+    Scheduler androidScheduler = AndroidSchedulers.mainThread();
+    Executor ioExecutor = AppExecutors.getInstance().ioThread();
 
-    public PostRepo(ApiClient apiClient) {
+    public PostRepo(ApiClient apiClient, AppDB appDB) {
         this.apiClient = apiClient;
+        this.appDB = appDB;
     }
 
     /**
@@ -44,7 +52,7 @@ public class PostRepo {
             final int userId,
             PostsViewModel.ViewType viewType,
             CompositeDisposable disposable) {
-        return new RepoBoundResource<List<Post>>(disposable) {
+        return new RepoBoundResource<List<Post>>(disposable, processScheduler, androidScheduler) {
 
             @Override
             public @NonNull
@@ -68,7 +76,7 @@ public class PostRepo {
 
             @Override
             public void saveResponse(final List<Post> response) {
-                AppExecutors.getInstance().ioThread(() -> appDB.getPostDao().insertAll(response));
+                ioExecutor.execute(() -> appDB.getPostDao().insertAll(response));
             }
         }.toLiveData();
     }
@@ -80,7 +88,7 @@ public class PostRepo {
      * @param isFavorite boolean flag to be updated
      */
     public void updateFavorite(int postId, boolean isFavorite) {
-        AppExecutors.getInstance().ioThread(() -> appDB.getPostDao().updateFavorite(postId, isFavorite));
+        ioExecutor.execute(() -> appDB.getPostDao().updateFavorite(postId, isFavorite));
     }
 
     /**
@@ -91,7 +99,7 @@ public class PostRepo {
      * @return livedata RepoResponse object
      */
     public LiveData<RepoResponse<Post>> getPostById(int postId, CompositeDisposable disposable) {
-        return new RepoBoundResource<Post>(disposable) {
+        return new RepoBoundResource<Post>(disposable, processScheduler, androidScheduler) {
 
             @Override
             public @NonNull
@@ -106,7 +114,7 @@ public class PostRepo {
 
             @Override
             public void saveResponse(final Post response) {
-                AppExecutors.getInstance().ioThread(() -> appDB.getPostDao().insert(response));
+                //no need because api call will never be done
             }
         }.toLiveData();
     }

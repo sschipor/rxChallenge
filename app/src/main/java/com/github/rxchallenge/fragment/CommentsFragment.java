@@ -54,8 +54,10 @@ public class CommentsFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mViewModel = ViewModelProviders.of(
-                requireActivity()
-                , new ViewModelFactory(InjectionHelper.getInstance().provideApiClient())
+                requireActivity(),
+                new ViewModelFactory(InjectionHelper.getInstance().provideApiClient(),
+                        InjectionHelper.getInstance().provideAppDatabase()
+                )
         ).get(CommentsViewModel.class);
     }
 

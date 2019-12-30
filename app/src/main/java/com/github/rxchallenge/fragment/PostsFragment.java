@@ -56,7 +56,10 @@ public class PostsFragment extends Fragment implements PostsAdapter.PostListCall
         super.onAttach(context);
         mViewModel = ViewModelProviders.of(
                 requireActivity(),
-                new ViewModelFactory(InjectionHelper.getInstance().provideApiClient())
+                new ViewModelFactory(
+                        InjectionHelper.getInstance().provideApiClient(),
+                        InjectionHelper.getInstance().provideAppDatabase()
+                )
         ).get(PostsViewModel.class);
         loginViewModel = ViewModelProviders.of(requireActivity()).get(LoginViewModel.class);
     }

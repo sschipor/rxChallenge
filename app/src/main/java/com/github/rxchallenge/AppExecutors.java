@@ -19,8 +19,7 @@ public class AppExecutors {
         return INSTANCE;
     }
 
-    //execute a task on IO thread
-    public void ioThread(Runnable runnable) {
-        IO_EXECUTOR.execute(runnable);
+    public Executor ioThread() {
+        return IO_EXECUTOR;
     }
 }

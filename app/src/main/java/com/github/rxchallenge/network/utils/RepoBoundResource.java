@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import io.reactivex.Flowable;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
-import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * @author Sebastian Schipor
@@ -19,6 +19,8 @@ abstract public class RepoBoundResource<ResultType> {
 
     private MutableLiveData<RepoResponse<ResultType>> result = new MutableLiveData();
     private CompositeDisposable compositeDisposable;
+    private Scheduler processScheduler;
+    private Scheduler androidScheduler;
 
     /**
      * The logic of this class is:
@@ -28,8 +30,12 @@ abstract public class RepoBoundResource<ResultType> {
      *
      * @param compositeDisposable the VM's composite disposable
      */
-    protected RepoBoundResource(CompositeDisposable compositeDisposable) {
+    protected RepoBoundResource(CompositeDisposable compositeDisposable,
+                                Scheduler processScheduler,
+                                Scheduler androidScheduler) {
         this.compositeDisposable = compositeDisposable;
+        this.processScheduler = processScheduler;
+        this.androidScheduler = androidScheduler;
         //notify start loader
         result.postValue(RepoResponse.loading());
 
@@ -46,8 +52,8 @@ abstract public class RepoBoundResource<ResultType> {
     private void addDbListener(@NonNull Flowable<ResultType> dbLoadTask) {
         //there is a valid db load task to be executed first
         compositeDisposable.add(dbLoadTask
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(processScheduler)
+                .observeOn(androidScheduler)
                 .subscribe(
                         resultType -> result.postValue(RepoResponse.success(resultType)),
                         error -> result.postValue(RepoResponse.error(error.getMessage()))
@@ -56,8 +62,8 @@ abstract public class RepoBoundResource<ResultType> {
     }
 
     private void makeApiCall() {
-        compositeDisposable.add(getApiCall().subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        compositeDisposable.add(getApiCall().subscribeOn(processScheduler)
+                .observeOn(androidScheduler)
                 .subscribeWith(new DisposableSingleObserver<ResultType>() {
                     @Override
                     public void onSuccess(ResultType resultType) {

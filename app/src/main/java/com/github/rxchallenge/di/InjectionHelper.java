@@ -1,5 +1,7 @@
 package com.github.rxchallenge.di;
 
+import com.github.rxchallenge.db.AppDB;
+import com.github.rxchallenge.db.DatabaseClient;
 import com.github.rxchallenge.network.ApiClient;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -33,4 +35,7 @@ public class InjectionHelper {
         return apiClient;
     }
 
+    public AppDB provideAppDatabase() {
+        return DatabaseClient.getInstance().getApplicationDB();
+    }
 }
