@@ -10,12 +10,12 @@ public class LoginViewModel extends ViewModel {
         INVALID_AUTHENTICATION  // Authentication failed
     }
 
-    final MutableLiveData<AuthenticationState> authenticationState =
+    //package private field used for testing
+    MutableLiveData<AuthenticationState> authenticationState =
             new MutableLiveData<>();
     int userId;
 
     public LoginViewModel() {
-        // In this example, the user is always unauthenticated when MainActivity is launched
         authenticationState.setValue(AuthenticationState.UNAUTHENTICATED);
     }
 

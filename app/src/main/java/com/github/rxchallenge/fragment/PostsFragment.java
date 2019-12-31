@@ -113,7 +113,7 @@ public class PostsFragment extends Fragment implements PostsAdapter.PostListCall
     }
 
     private void getPosts() {
-        mViewModel.getPostsResult.observe(getViewLifecycleOwner(), listRepoResponse -> {
+        mViewModel.postsResult.observe(getViewLifecycleOwner(), listRepoResponse -> {
             switch (listRepoResponse.getStatus()) {
                 case LOADING:
                     ((MainActivity) getActivity()).showProgress(true);

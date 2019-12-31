@@ -15,16 +15,17 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class PostsViewModel extends ViewModel {
 
+    int userId;
     private PostRepo repo;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private int userId;
     private MutableLiveData<ViewType> viewType = new MutableLiveData<>(ViewType.ALL);
+    //package private field used for testing
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public PostsViewModel(PostRepo repo) {
         this.repo = repo;
     }
 
-    LiveData<RepoResponse<List<Post>>> getPostsResult =
+    LiveData<RepoResponse<List<Post>>> postsResult =
             Transformations.switchMap(viewType, type ->
                     repo.getPosts(userId, type, compositeDisposable));
 
@@ -41,7 +42,7 @@ public class PostsViewModel extends ViewModel {
     }
 
     void updateFavoritePost(int postId, boolean isFavorite) {
-        repo.updateFavorite(postId,isFavorite);
+        repo.updateFavorite(postId, isFavorite);
     }
 
     @Override

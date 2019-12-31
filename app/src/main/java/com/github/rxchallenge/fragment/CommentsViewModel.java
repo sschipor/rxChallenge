@@ -10,13 +10,15 @@ import com.github.rxchallenge.repo.CommentRepo;
 import com.github.rxchallenge.repo.PostRepo;
 
 import java.util.List;
+
 import io.reactivex.disposables.CompositeDisposable;
 
 public class CommentsViewModel extends ViewModel {
 
     private CommentRepo commentRepo;
     private PostRepo postRepo;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    //package private field used for testing
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public CommentsViewModel(CommentRepo commentRepo, PostRepo postRepo) {
         this.commentRepo = commentRepo;
